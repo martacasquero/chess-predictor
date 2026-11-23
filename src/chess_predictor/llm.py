@@ -87,3 +87,13 @@ class OllamaClient:
         )
         respuesta.raise_for_status()
         return respuesta.json()["message"]["content"]
+
+
+def explain(client, moves, n, prob_blancas):
+    """Pide la explicación a la IA. Si falla, no rompe el pipeline."""
+    prompt = build_prompt(moves, n, prob_blancas)
+    try:
+        return client.generate(prompt)
+    except Exception as e:
+        logger.error("Error llamando a la IA: %s", e)
+        return "No se ha podido generar la explicación."

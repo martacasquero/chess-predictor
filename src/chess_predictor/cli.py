@@ -6,7 +6,9 @@ import sys
 
 from chess_predictor.predict import load_model, predict
 from chess_predictor.train import train
+from dotenv import load_dotenv
 
+from chess_predictor.llm import explain, get_client
 logger = logging.getLogger("chess_predictor")
 
 
@@ -31,8 +33,9 @@ def main():
     p_pred = sub.add_parser("predict", help="Predice el ganador de una partida")
     p_pred.add_argument("--moves", required=True, help="Jugadas separadas por espacios")
     p_pred.add_argument("--n", type=int, default=20, help="N del modelo a usar")
-
+    p_pred.add_argument("--explain", action="store_true", help="Pide a la IA una explicación")
     args = parser.parse_args()
+    load_dotenv()
     setup_logging()
 
     model_path = f"models/modelo_n{args.n}.joblib"
@@ -43,6 +46,10 @@ def main():
             resultado = predict(load_model(model_path), [args.moves])
             fila = resultado.iloc[0]
             print(f"Ganador previsto: {fila['ganador']} (prob. blancas = {fila['prob_blancas']})")
+            if args.explain:
+                primeras = " ".join(args.moves.split()[: args.n])
+                prob = fila["prob_blancas"]
+                print(explain(get_client(), primeras, args.n, prob))
     except (FileNotFoundError, ValueError) as e:
         logger.error(e)
         sys.exit(1)
