@@ -7,11 +7,22 @@ authors = [
     { name = "Marta Casquero", email = "martacasquero@MacBook-Pro-de-Marta.local" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "chess>=1.11.2",
+    "joblib>=1.6.0",
+    "pandas>=3.1.1",
+    "python-dotenv>=1.2.4",
+    "scikit-learn>=1.9.1",
+]
 
 [project.scripts]
-chess-predictor = "chess_predictor:main"
+chess-predictor = "chess_predictor.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.12.9,<0.13.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]
